@@ -31,7 +31,6 @@ section[id],
 
 /* Lichte gradient mesh voor de hero */
 .hero-mesh {
-  background-color: #f5f9fc;
   background-image:
     radial-gradient(at 8% 12%, rgb(43 188 214 / 0.28) 0px, transparent 45%),
     radial-gradient(at 92% 8%, rgb(11 27 51 / 0.16) 0px, transparent 45%),

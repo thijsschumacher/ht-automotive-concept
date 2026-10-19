@@ -4,13 +4,14 @@
  * FOTO'S: dit concept gebruikt bewust geen foto's, alles is CSS en inline SVG.
  * Echte werkplaatsfoto's kunnen later op deze plekken worden ingevuld
  * (zet ze in /public en gebruik next/image):
- *   1. Hero            -> optioneel een werkplaatsfoto als achtergrond achter de gradient mesh (<Hero />)
+ *   1. Hero            -> nu een stockfoto van Unsplash (HERO_PHOTO); vervang door een eigen werkplaatsfoto in /public
  *   2. Dienstkaarten   -> optioneel een foto per dienst boven het icoon (<Services />)
  *   3. Over ons        -> vervang de initialen-cirkels door portretten van Bilal en Najim (<About />)
  *   4. Afspraak        -> eventueel een foto van de wachtruimte naast de contactopties (<Appointment />)
  */
 
 import type { ReactNode } from "react";
+import Image from "next/image";
 import ApkCheck from "@/components/ApkCheck";
 import Header from "@/components/Header";
 import Logo from "@/components/Logo";
@@ -28,6 +29,11 @@ const ROUTE_URL = `https://www.google.com/maps/dir/?api=1&destination=${MAPS_QUE
 
 // TODO: openingstijden invullen zodra bekend, bijv. [{ day: "Maandag t/m vrijdag", hours: "08:00 – 17:30" }]
 const OPENING_HOURS: { day: string; hours: string }[] = [];
+
+// Stockfoto: "Mechanic working on a car engine in a workshop" door Dextar Studio (Unsplash License)
+// https://unsplash.com/photos/mechanic-working-on-a-car-engine-in-a-workshop-XP8o9_Arwqg
+// TODO: vervangen door een eigen foto van de werkplaats, bijv. "/werkplaats.jpg" in /public
+const HERO_PHOTO = "https://images.unsplash.com/photo-1771340012319-0b4fca008b54";
 
 const KEURMERKEN = ["RDW erkend", "NAP", "Bosch", "Airco Service Station", "Kroon-Oil", "Pinnen ja graag"];
 
@@ -174,7 +180,21 @@ function Hero() {
     { icon: icons.coffee, label: "Gratis koffie" },
   ];
   return (
-    <section id="top" className="hero-mesh relative isolate overflow-hidden">
+    <section id="top" className="relative isolate overflow-hidden bg-[#f5f9fc]">
+      {/* Werkplaatsfoto, bewust vervaagd zodat de tekst leidend blijft */}
+      <Image
+        src={HERO_PHOTO}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="-z-30 -scale-x-100 object-cover object-center opacity-60 saturate-[0.85]"
+      />
+      <div
+        className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-r from-[#f5f9fc]/95 via-[#f5f9fc]/75 to-[#f5f9fc]/25 max-lg:bg-gradient-to-b max-lg:via-[#f5f9fc]/85 max-lg:to-[#f5f9fc]/70"
+        aria-hidden="true"
+      />
+      <div className="hero-mesh pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="hero-grid pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-12 sm:px-6 sm:pt-16 lg:min-h-[85vh] lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-8 lg:py-20">
         <div>
