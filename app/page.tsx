@@ -180,7 +180,7 @@ function Hero() {
     { icon: icons.coffee, label: "Gratis koffie" },
   ];
   return (
-    <section id="top" className="relative isolate overflow-hidden bg-[#f5f9fc]">
+    <section id="top" className="relative isolate overflow-hidden bg-white">
       {/* Werkplaatsfoto, bewust vervaagd zodat de tekst leidend blijft */}
       <Image
         src={HERO_PHOTO}
@@ -188,14 +188,12 @@ function Hero() {
         fill
         priority
         sizes="100vw"
-        className="-z-30 -scale-x-100 object-cover object-center opacity-60 saturate-[0.85]"
+        className="-z-20 -scale-x-100 object-cover object-center grayscale-[0.3]"
       />
       <div
-        className="pointer-events-none absolute inset-0 -z-20 bg-gradient-to-r from-[#f5f9fc]/95 via-[#f5f9fc]/75 to-[#f5f9fc]/25 max-lg:bg-gradient-to-b max-lg:via-[#f5f9fc]/85 max-lg:to-[#f5f9fc]/70"
+        className="pointer-events-none absolute inset-0 -z-10 bg-white/85 lg:bg-transparent lg:bg-gradient-to-r lg:from-white/92 lg:via-white/80 lg:to-white/55"
         aria-hidden="true"
       />
-      <div className="hero-mesh pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
-      <div className="hero-grid pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-12 sm:px-6 sm:pt-16 lg:min-h-[85vh] lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-8 lg:py-20">
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-navy-900/10 bg-white/70 px-4 py-2 text-sm font-medium text-navy-800 shadow-sm backdrop-blur">
@@ -240,7 +238,6 @@ function Hero() {
           </ul>
         </div>
         <div id="apk-check" className="relative mx-auto w-full max-w-xl lg:max-w-none lg:pl-4">
-          <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-accent-400/30 to-navy-700/20 blur-3xl" aria-hidden="true" />
           <div className="animate-float focus-within:[animation-play-state:paused]">
             <ApkCheck />
           </div>

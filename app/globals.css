@@ -29,23 +29,6 @@ section[id],
   scroll-margin-top: 5rem;
 }
 
-/* Lichte gradient mesh voor de hero */
-.hero-mesh {
-  background-image:
-    radial-gradient(at 8% 12%, rgb(43 188 214 / 0.28) 0px, transparent 45%),
-    radial-gradient(at 92% 8%, rgb(11 27 51 / 0.16) 0px, transparent 45%),
-    radial-gradient(at 78% 88%, rgb(14 162 192 / 0.26) 0px, transparent 50%),
-    radial-gradient(at 30% 95%, rgb(29 53 87 / 0.12) 0px, transparent 45%);
-}
-
-.hero-grid {
-  background-image:
-    linear-gradient(rgb(11 27 51 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(11 27 51 / 0.05) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse at 60% 40%, black 20%, transparent 70%);
-}
-
 @keyframes float {
   0%,
   100% {
