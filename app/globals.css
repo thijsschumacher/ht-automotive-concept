@@ -3,7 +3,7 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* Accent: blauw/turquoise in lijn met het huidige HT Automotive-logo */
+  /* Accent: turquoise in lijn met de swoosh van het HT Automotive-logo */
   --color-accent-50: #ecfbfd;
   --color-accent-100: #cff3f8;
   --color-accent-300: #67d4e6;
@@ -12,9 +12,11 @@
   --color-accent-600: #0a82a2;
   --color-accent-700: #0d6884;
 
-  --color-ink-950: #070b14;
-  --color-ink-900: #0b1220;
-  --color-ink-800: #131c2e;
+  /* Diepblauw voor tekst en donkere vlakken */
+  --color-navy-700: #1d3557;
+  --color-navy-800: #12243f;
+  --color-navy-900: #0b1b33;
+  --color-navy-950: #071226;
 }
 
 html {
@@ -22,8 +24,57 @@ html {
 }
 
 /* Ruimte voor de sticky header bij anchor-links */
-section[id] {
-  scroll-margin-top: 4.5rem;
+section[id],
+[id="apk-check"] {
+  scroll-margin-top: 5rem;
+}
+
+/* Lichte gradient mesh voor de hero */
+.hero-mesh {
+  background-color: #f5f9fc;
+  background-image:
+    radial-gradient(at 8% 12%, rgb(43 188 214 / 0.28) 0px, transparent 45%),
+    radial-gradient(at 92% 8%, rgb(11 27 51 / 0.16) 0px, transparent 45%),
+    radial-gradient(at 78% 88%, rgb(14 162 192 / 0.26) 0px, transparent 50%),
+    radial-gradient(at 30% 95%, rgb(29 53 87 / 0.12) 0px, transparent 45%);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgb(11 27 51 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(11 27 51 / 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 60% 40%, black 20%, transparent 70%);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-float {
+    animation: float 7s ease-in-out infinite;
+  }
+
+  /* Scroll-reveal: alleen verbergen als JS en IntersectionObserver actief zijn */
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s ease,
+      transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .reveal-ready [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

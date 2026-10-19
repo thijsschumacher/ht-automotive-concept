@@ -1,14 +1,20 @@
 /*
  * HT Automotive – conceptwebsite (salesconcept Forever in Business)
  *
- * FOTO'S: dit concept gebruikt bewust geen foto's. Echte beelden van de werkplaats
- * kunnen later op deze plekken worden ingevuld (zet ze in /public en gebruik next/image):
- *   1. Hero            -> vervang/aanvul <HeroArt /> met een foto van de werkplaats of een auto op de brug
- *   2. Dienstkaarten   -> optioneel een foto per dienst boven het icoon (APK, onderhoud, zomer/wintercheck)
- *   3. Over ons        -> vervang het blok <FoundersVisual /> door een foto van Bilal en Najim
+ * FOTO'S: dit concept gebruikt bewust geen foto's, alles is CSS en inline SVG.
+ * Echte werkplaatsfoto's kunnen later op deze plekken worden ingevuld
+ * (zet ze in /public en gebruik next/image):
+ *   1. Hero            -> optioneel een werkplaatsfoto als achtergrond achter de gradient mesh (<Hero />)
+ *   2. Dienstkaarten   -> optioneel een foto per dienst boven het icoon (<Services />)
+ *   3. Over ons        -> vervang de initialen-cirkels door portretten van Bilal en Najim (<About />)
+ *   4. Afspraak        -> eventueel een foto van de wachtruimte naast de contactopties (<Appointment />)
  */
 
 import type { ReactNode } from "react";
+import ApkCheck from "@/components/ApkCheck";
+import Header from "@/components/Header";
+import Logo from "@/components/Logo";
+import Reveal from "@/components/Reveal";
 
 const PHONE_DISPLAY = "(0174) 628 395";
 const PHONE_HREF = "tel:+31174628395";
@@ -23,13 +29,7 @@ const ROUTE_URL = `https://www.google.com/maps/dir/?api=1&destination=${MAPS_QUE
 // TODO: openingstijden invullen zodra bekend, bijv. [{ day: "Maandag t/m vrijdag", hours: "08:00 – 17:30" }]
 const OPENING_HOURS: { day: string; hours: string }[] = [];
 
-const NAV = [
-  { href: "#top", label: "Home" },
-  { href: "#diensten", label: "Diensten" },
-  { href: "#over-ons", label: "Over ons" },
-  { href: "#afspraak", label: "Afspraak maken" },
-  { href: "#contact", label: "Contact" },
-];
+const KEURMERKEN = ["RDW erkend", "NAP", "Bosch", "Airco Service Station", "Kroon-Oil", "Pinnen ja graag"];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -98,23 +98,6 @@ const icons = {
       <path d="M10.8 12.2L19 4M16 7l2.5 2.5M14 9l2 2" />
     </>
   ),
-  clipboard: (
-    <>
-      <path d="M15 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2" />
-      <rect x="9" y="3" width="6" height="4" rx="1" />
-      <path d="M9 14l2 2 4-4" />
-    </>
-  ),
-  wrench: (
-    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-  ),
-  thermo: (
-    <>
-      <path d="M14 14.76V4.5a2 2 0 1 0-4 0v10.26a4 4 0 1 0 4 0z" />
-      <path d="M12 9v7" />
-      <path d="M18 5h3M18 9h3M18 13h2" />
-    </>
-  ),
   phone: (
     <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
   ),
@@ -143,203 +126,116 @@ const icons = {
     </>
   ),
   arrow: <path d="M5 12h14M13 6l6 6-6 6" />,
-  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
 };
 
-/* ---------- Auto-silhouet ---------- */
-
-function CarSilhouette({ className }: { className?: string }) {
+/* Duotone dienst-iconen (40x40) */
+function ServiceIcon({ type }: { type: "apk" | "repair" | "season" }) {
   return (
-    <svg viewBox="0 0 400 130" className={className} aria-hidden="true">
-      <path
-        d="M20 85 C20 75 28 70 40 68 L95 62 C115 45 140 32 175 30 L245 30 C270 30 290 42 310 58 L355 64 C372 67 382 74 382 85 L382 92 C382 95 380 97 377 97 L340 97 A30 30 0 0 0 280 97 L130 97 A30 30 0 0 0 70 97 L25 97 C22 97 20 95 20 92 Z"
-        fill="currentColor"
-      />
-      <path d="M122 62 L170 38 L204 38 L204 62 Z M214 38 L244 38 C262 38 278 48 292 60 L214 62 Z" fill="#070b14" opacity="0.55" />
-      <circle cx="310" cy="97" r="24" fill="currentColor" />
-      <circle cx="100" cy="97" r="24" fill="currentColor" />
-      <circle cx="310" cy="97" r="10" fill="#070b14" opacity="0.5" />
-      <circle cx="100" cy="97" r="10" fill="#070b14" opacity="0.5" />
-    </svg>
-  );
-}
-
-function Logo({ dark = false }: { dark?: boolean }) {
-  return (
-    <a href="#top" className="flex items-center gap-2.5" aria-label="HT Automotive, naar boven">
-      <span className="grid h-9 w-9 place-items-center rounded-xl bg-accent-500 text-white shadow-sm">
-        <svg viewBox="0 0 40 24" className="h-4 w-7" aria-hidden="true">
+    <svg viewBox="0 0 40 40" className="h-9 w-9" fill="none" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {type === "apk" && (
+        <>
+          <rect x="9" y="7" width="22" height="28" rx="4" fill="currentColor" opacity="0.18" />
+          <rect x="9" y="7" width="22" height="28" rx="4" stroke="currentColor" strokeWidth="2" />
+          <rect x="15" y="4" width="10" height="6" rx="2" fill="white" stroke="currentColor" strokeWidth="2" />
+          <path d="M14.5 21.5l4 4 7-8" stroke="currentColor" strokeWidth="2.4" />
+        </>
+      )}
+      {type === "repair" && (
+        <>
+          <circle cx="25" cy="15" r="9" fill="currentColor" opacity="0.18" />
           <path
-            d="M2 17c0-2 1.4-3 3-3.3L10 13c2-3 4.5-5 8-5h6c3 0 5 1.6 7 4l5 .8c1.6.3 2 1.3 2 2.6V18H2z"
-            fill="currentColor"
+            d="M24.5 9.5a1.2 1.2 0 0 0 0 1.7l2.2 2.2a1.2 1.2 0 0 0 1.7 0l4.4-4.4a8 8 0 0 1-10.6 10.6l-9.3 9.3a2.9 2.9 0 0 1-4-4l9.3-9.3A8 8 0 0 1 28.8 5z"
+            stroke="currentColor"
+            strokeWidth="2"
           />
-          <circle cx="10" cy="18.5" r="3" fill="currentColor" />
-          <circle cx="30" cy="18.5" r="3" fill="currentColor" />
-        </svg>
-      </span>
-      <span className={`text-lg font-bold tracking-tight ${dark ? "text-white" : "text-ink-900"}`}>
-        HT <span className="text-accent-500">Automotive</span>
-      </span>
-    </a>
+        </>
+      )}
+      {type === "season" && (
+        <>
+          <circle cx="16" cy="28" r="7" fill="currentColor" opacity="0.18" />
+          <path d="M19 23.5V9a3 3 0 0 0-6 0v14.5a6 6 0 1 0 6 0z" stroke="currentColor" strokeWidth="2" />
+          <path d="M16 15v13" stroke="currentColor" strokeWidth="2.4" />
+          <path d="M29 6v10M24.7 8.5l8.6 5M24.7 13.5l8.6-5" stroke="currentColor" strokeWidth="1.8" />
+          <circle cx="29" cy="28" r="3" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M29 21.5v1.5M29 33v1.5M22.5 28H24M34 28h1.5" stroke="currentColor" strokeWidth="1.8" />
+        </>
+      )}
+    </svg>
   );
 }
 
 /* ---------- Secties ---------- */
 
-function Header() {
+function Hero() {
+  const trust = [
+    { icon: icons.shield, label: "RDW erkend" },
+    { icon: icons.car, label: "Alle merken" },
+    { icon: icons.coffee, label: "Gratis koffie" },
+  ];
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Logo />
-        <nav aria-label="Hoofdmenu" className="hidden lg:block">
-          <ul className="flex items-center gap-7 text-sm font-medium text-slate-600">
-            {NAV.map((item) => (
-              <li key={item.href}>
-                <a href={item.href} className="transition-colors hover:text-accent-600">
-                  {item.label}
-                </a>
+    <section id="top" className="hero-mesh relative isolate overflow-hidden">
+      <div className="hero-grid pointer-events-none absolute inset-0 -z-10" aria-hidden="true" />
+      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-12 sm:px-6 sm:pt-16 lg:min-h-[85vh] lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-8 lg:py-20">
+        <div>
+          <p className="inline-flex items-center gap-2 rounded-full border border-navy-900/10 bg-white/70 px-4 py-2 text-sm font-medium text-navy-800 shadow-sm backdrop-blur">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-60 motion-safe:animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent-500" />
+            </span>
+            Erkend RDW APK-keuringsstation in Naaldwijk
+          </p>
+          <h1 className="mt-7 text-[2.6rem] font-bold leading-[1.04] tracking-[-0.035em] text-navy-900 sm:text-6xl lg:text-[4.25rem]">
+            APK en onderhoud in <span className="text-accent-500">Naaldwijk</span>
+          </h1>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-600 sm:text-xl">
+            APK, onderhoud en reparatie aan alle merken auto&apos;s en lichte bedrijfswagens. Breng uw auto gerust
+            vooraf en wacht met een gratis kopje koffie of thee.
+          </p>
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="#afspraak"
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full bg-navy-900 px-7 text-base font-semibold text-white shadow-lg shadow-navy-900/20 transition hover:bg-accent-600"
+            >
+              Maak een afspraak
+              <Icon className="h-5 w-5">{icons.arrow}</Icon>
+            </a>
+            <a
+              href={PHONE_HREF}
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-full border border-navy-900/15 bg-white/70 px-7 text-base font-semibold text-navy-900 backdrop-blur transition hover:border-accent-500 hover:text-accent-700"
+            >
+              <Icon className="h-5 w-5">{icons.phone}</Icon>
+              Bel direct {PHONE_DISPLAY}
+            </a>
+          </div>
+          <ul className="mt-10 flex flex-wrap gap-x-7 gap-y-3 border-t border-navy-900/10 pt-7">
+            {trust.map((t) => (
+              <li key={t.label} className="flex items-center gap-2.5 text-[15px] font-semibold text-navy-900">
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-accent-500/15 text-accent-700">
+                  <Icon className="h-4 w-4">{t.icon}</Icon>
+                </span>
+                {t.label}
               </li>
             ))}
           </ul>
-        </nav>
-        <div className="flex items-center gap-2">
-          <a
-            href={PHONE_HREF}
-            className="inline-flex items-center gap-2 rounded-full bg-ink-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-600"
-          >
-            <Icon className="h-4 w-4">{icons.phone}</Icon>
-            Bel ons
-          </a>
-          {/* Mobiel menu zonder JavaScript */}
-          <details className="group relative lg:hidden">
-            <summary
-              className="grid h-10 w-10 cursor-pointer list-none place-items-center rounded-full border border-slate-200 text-ink-900 [&::-webkit-details-marker]:hidden"
-              aria-label="Menu openen"
-            >
-              <Icon className="h-5 w-5">{icons.menu}</Icon>
-            </summary>
-            <nav
-              aria-label="Mobiel menu"
-              className="absolute right-0 mt-3 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl"
-            >
-              <ul>
-                {NAV.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      href={item.href}
-                      className="block rounded-xl px-4 py-3 text-base font-medium text-slate-700 hover:bg-accent-50 hover:text-accent-700"
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </details>
         </div>
-      </div>
-    </header>
-  );
-}
-
-function HeroArt() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {/* Gloed */}
-      <div className="absolute -right-40 top-1/4 h-[36rem] w-[36rem] rounded-full bg-accent-500/20 blur-3xl" />
-      <div className="absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-accent-700/20 blur-3xl" />
-      {/* Lichtlijnen */}
-      <svg className="absolute inset-0 h-full w-full" preserveAspectRatio="none" viewBox="0 0 1200 800">
-        <defs>
-          <linearGradient id="streak" x1="0" x2="1">
-            <stop offset="0" stopColor="#2bbcd6" stopOpacity="0" />
-            <stop offset="0.6" stopColor="#2bbcd6" stopOpacity="0.55" />
-            <stop offset="1" stopColor="#2bbcd6" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path d="M-50 620 C300 560 700 590 1250 470" stroke="url(#streak)" strokeWidth="1.5" fill="none" />
-        <path d="M-50 660 C350 610 750 640 1250 540" stroke="url(#streak)" strokeWidth="1" fill="none" opacity="0.6" />
-        <path d="M-50 700 C400 660 800 690 1250 610" stroke="url(#streak)" strokeWidth="0.8" fill="none" opacity="0.4" />
-        <path d="M-50 180 C400 230 800 140 1250 210" stroke="url(#streak)" strokeWidth="0.6" fill="none" opacity="0.3" />
-      </svg>
-      {/* Raster */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]" />
-      {/* Auto */}
-      <CarSilhouette className="absolute -right-24 bottom-10 w-[46rem] max-w-none text-white/[0.07] sm:-right-10 lg:bottom-16 lg:right-0 lg:w-[52rem]" />
-      <div className="absolute bottom-10 right-0 h-px w-2/3 bg-gradient-to-l from-accent-400/60 to-transparent lg:bottom-16" />
-    </div>
-  );
-}
-
-function Hero() {
-  return (
-    <section
-      id="top"
-      className="relative isolate flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-gradient-to-b from-ink-950 via-ink-900 to-ink-800 text-white"
-    >
-      <HeroArt />
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
-        <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-accent-100">
-          <span className="h-2 w-2 rounded-full bg-accent-400" />
-          Erkend RDW APK-keuringsstation in Naaldwijk
-        </p>
-        <h1 className="max-w-3xl text-4xl font-bold leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
-          Betrouwbaar onderhoud en APK in <span className="text-accent-400">Naaldwijk</span>
-        </h1>
-        <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300 sm:text-xl">
-          Onderhoud, reparatie en APK voor alle merken auto&apos;s en lichte bedrijfswagens. U wacht met een
-          gratis kopje koffie of thee.
-        </p>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <a
-            href="#afspraak"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-accent-500 px-7 py-4 text-base font-semibold text-white shadow-lg shadow-accent-500/25 transition hover:bg-accent-400"
-          >
-            Maak een afspraak
-            <Icon className="h-5 w-5">{icons.arrow}</Icon>
-          </a>
-          <a
-            href={PHONE_HREF}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 px-7 py-4 text-base font-semibold text-white transition hover:border-white/40 hover:bg-white/10"
-          >
-            <Icon className="h-5 w-5">{icons.phone}</Icon>
-            Bel direct {PHONE_DISPLAY}
-          </a>
+        <div id="apk-check" className="relative mx-auto w-full max-w-xl lg:max-w-none lg:pl-4">
+          <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-accent-400/30 to-navy-700/20 blur-3xl" aria-hidden="true" />
+          <div className="animate-float focus-within:[animation-play-state:paused]">
+            <ApkCheck />
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function TrustStrip() {
-  const items = [
-    { icon: icons.shield, label: "RDW erkend APK-station" },
-    { icon: icons.car, label: "Alle merken" },
-    { icon: icons.coffee, label: "Gratis koffie of thee" },
-    { icon: icons.key, label: "Auto vooraf brengen mogelijk" },
-  ];
+function SectionHeading({ eyebrow, title, intro, center = false }: { eyebrow: string; title: string; intro?: string; center?: boolean }) {
   return (
-    <div className="border-b border-slate-200 bg-white">
-      <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-x-4 gap-y-5 px-4 py-7 sm:px-6 lg:grid-cols-4">
-        {items.map((item) => (
-          <li key={item.label} className="flex items-center gap-3 text-sm font-semibold text-ink-900 sm:text-base">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-accent-50 text-accent-600">
-              <Icon className="h-5 w-5">{item.icon}</Icon>
-            </span>
-            {item.label}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function SectionHeading({ eyebrow, title, intro }: { eyebrow: string; title: string; intro?: string }) {
-  return (
-    <div className="max-w-2xl">
-      <p className="text-sm font-semibold uppercase tracking-widest text-accent-600">{eyebrow}</p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">{title}</h2>
-      {intro && <p className="mt-4 text-lg leading-relaxed text-slate-600">{intro}</p>}
+    <div data-reveal className={`max-w-2xl ${center ? "mx-auto text-center" : ""}`}>
+      <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-600">{eyebrow}</p>
+      <h2 className="mt-4 text-4xl font-bold leading-[1.1] tracking-[-0.03em] text-navy-900 sm:text-5xl">{title}</h2>
+      {intro && <p className="mt-5 text-lg leading-relaxed text-slate-600 sm:text-xl">{intro}</p>}
     </div>
   );
 }
@@ -347,46 +243,48 @@ function SectionHeading({ eyebrow, title, intro }: { eyebrow: string; title: str
 function Services() {
   const services = [
     {
-      icon: icons.clipboard,
+      icon: "apk" as const,
       title: "APK keuringen",
       text: "Wij zijn een erkend RDW APK-keuringsstation in Naaldwijk, Westland. Uw APK wordt vakkundig en zorgvuldig uitgevoerd, zodat u weer met een gerust gevoel de weg op gaat.",
     },
     {
-      icon: icons.wrench,
+      icon: "repair" as const,
       title: "Onderhoud & reparatie",
       text: "Voor alle merken auto's en lichte bedrijfswagens. Van olie verversen tot regulier onderhoud en reparaties: wij houden uw voertuig in topconditie.",
     },
     {
-      icon: icons.thermo,
+      icon: "season" as const,
       title: "Zomer- & wintercheck",
       text: "Met onze seizoenscheck gaat uw auto of lichte bedrijfswagen veilig de zomer of winter in. Wij controleren de belangrijkste punten, zodat u niet voor verrassingen komt te staan.",
     },
   ];
   return (
-    <section id="diensten" className="bg-slate-50 py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+    <section id="diensten" className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Diensten"
           title="Alles voor uw auto onder één dak"
           intro="APK, onderhoud en reparatie aan alle merken auto's en lichte bedrijfswagens."
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
-          {services.map((s) => (
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          {services.map((s, i) => (
             <article
               key={s.title}
-              className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-8 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-accent-300 hover:shadow-xl hover:shadow-accent-500/10"
+              data-reveal
+              style={{ transitionDelay: `${i * 90}ms` }}
+              className="group flex flex-col rounded-3xl border border-slate-200/80 bg-slate-50/60 p-8 transition duration-300 hover:-translate-y-1 hover:border-accent-300 hover:bg-white hover:shadow-[0_24px_60px_-24px_rgba(11,27,51,0.25)] sm:p-10"
             >
-              <span className="grid h-14 w-14 place-items-center rounded-2xl bg-ink-900 text-accent-400 transition-colors group-hover:bg-accent-500 group-hover:text-white">
-                <Icon className="h-7 w-7">{s.icon}</Icon>
+              <span className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-accent-100 to-accent-50 text-accent-700 ring-1 ring-accent-500/15 transition group-hover:from-accent-500 group-hover:to-accent-400 group-hover:text-white">
+                <ServiceIcon type={s.icon} />
               </span>
-              <h3 className="mt-6 text-xl font-bold text-ink-900">{s.title}</h3>
-              <p className="mt-3 flex-1 leading-relaxed text-slate-600">{s.text}</p>
+              <h3 className="mt-8 text-2xl font-bold tracking-tight text-navy-900">{s.title}</h3>
+              <p className="mt-4 flex-1 text-[17px] leading-relaxed text-slate-600">{s.text}</p>
               <a
                 href="#afspraak"
-                className="mt-8 inline-flex items-center gap-2 self-start rounded-full border border-slate-200 px-5 py-2.5 text-sm font-semibold text-ink-900 transition hover:border-accent-500 hover:bg-accent-500 hover:text-white"
+                className="mt-8 inline-flex min-h-11 items-center gap-2 self-start font-semibold text-accent-700 transition hover:text-navy-900"
               >
                 Meer info
-                <Icon className="h-4 w-4 transition-transform group-hover:translate-x-0.5">{icons.arrow}</Icon>
+                <Icon className="h-4 w-4 transition-transform group-hover:translate-x-1">{icons.arrow}</Icon>
               </a>
             </article>
           ))}
@@ -396,64 +294,61 @@ function Services() {
   );
 }
 
-function FoundersVisual() {
-  // Placeholder: vervang door een foto van Bilal en Najim in de werkplaats.
-  return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-ink-900 to-ink-800 p-8 text-white shadow-xl sm:p-10">
-      <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-accent-500/25 blur-3xl" aria-hidden="true" />
-      <CarSilhouette className="absolute -bottom-6 -right-10 w-96 text-white/[0.06]" />
-      <p className="relative text-sm font-semibold uppercase tracking-widest text-accent-300">De oprichters</p>
-      <ul className="relative mt-6 space-y-4">
-        {["Bilal Tahayekt", "Najim el Haddioui"].map((name) => (
-          <li key={name} className="flex items-center gap-4">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-white/10 text-lg font-bold text-accent-300">
-              {name
-                .split(" ")
-                .filter((p) => p[0] === p[0].toUpperCase())
-                .map((p) => p[0])
-                .join("")}
-            </span>
-            <span className="text-xl font-semibold">{name}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="relative mt-8 max-w-sm text-slate-300">
-        Een jong bedrijf met vakkennis, korte lijnen en persoonlijke aandacht voor elke klant.
-      </p>
-    </div>
-  );
-}
-
 function About() {
+  const founders = [
+    { name: "Bilal Tahayekt", initials: "BT" },
+    { name: "Najim el Haddioui", initials: "NH" },
+  ];
   const perks = [
     { icon: icons.key, title: "Auto vooraf brengen", text: "Breng uw auto gerust van tevoren, dan staat hij klaar voor de afspraak." },
     { icon: icons.briefcase, title: "Flexibel voor bedrijven", text: "Flexibele openingstijden voor bedrijven met lichte bedrijfswagens." },
     { icon: icons.coffee, title: "Koffie of thee", text: "Wacht u tijdens de APK of reparatie? De koffie of thee staat klaar." },
   ];
   return (
-    <section id="over-ons" className="py-20 sm:py-28">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
+    <section id="over-ons" className="bg-slate-50 py-24 sm:py-32">
+      <div className="mx-auto grid max-w-7xl gap-16 px-4 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:px-8">
         <div>
           <SectionHeading
             eyebrow="Over ons"
             title="Jong, persoonlijk en vakkundig"
             intro="HT Automotive is opgericht door Bilal Tahayekt en Najim el Haddioui. Als jong bedrijf verzorgen wij onderhoud, autoreparaties en APK aan alle merken auto's en lichte bedrijfswagens. Bij ons bent u geen nummer: we nemen de tijd, leggen uit wat we doen en denken met u mee."
           />
-          <ul className="mt-10 space-y-6">
-            {perks.map((p) => (
-              <li key={p.title} className="flex gap-4">
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-accent-50 text-accent-600">
-                  <Icon className="h-5 w-5">{p.icon}</Icon>
+          <div data-reveal className="mt-10 grid gap-4 sm:grid-cols-2">
+            {founders.map((f) => (
+              <div key={f.name} className="flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+                {/* Placeholder: vervang door een portretfoto */}
+                <span
+                  className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-gradient-to-br from-navy-800 to-navy-900 text-lg font-bold text-accent-300"
+                  aria-hidden="true"
+                >
+                  {f.initials}
                 </span>
                 <div>
-                  <h3 className="font-semibold text-ink-900">{p.title}</h3>
-                  <p className="mt-1 text-slate-600">{p.text}</p>
+                  <p className="font-semibold text-navy-900">{f.name}</p>
+                  <p className="text-sm text-slate-500">Oprichter</p>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
-        <FoundersVisual />
+        <ul className="space-y-4 self-center">
+          {perks.map((p, i) => (
+            <li
+              key={p.title}
+              data-reveal
+              style={{ transitionDelay: `${i * 90}ms` }}
+              className="flex gap-5 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8"
+            >
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-accent-50 text-accent-700 ring-1 ring-accent-500/15">
+                <Icon className="h-6 w-6">{p.icon}</Icon>
+              </span>
+              <div>
+                <h3 className="text-lg font-semibold text-navy-900">{p.title}</h3>
+                <p className="mt-1.5 leading-relaxed text-slate-600">{p.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
@@ -466,28 +361,35 @@ function Appointment() {
     { icon: icons.pin, title: "Langskomen", text: `${ADDRESS_LINE_1}, Naaldwijk`, cta: "Plan uw route", href: ROUTE_URL, external: true },
   ];
   return (
-    <section id="afspraak" className="bg-slate-50 py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="overflow-hidden rounded-[2rem] bg-ink-900 px-6 py-12 text-white shadow-2xl sm:px-12 sm:py-16">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-widest text-accent-300">Afspraak maken</p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Plan uw APK, onderhoud of reparatie</h2>
-            <p className="mt-4 text-lg text-slate-300">
+    <section id="afspraak" className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div
+          data-reveal
+          className="relative overflow-hidden rounded-[2.5rem] bg-navy-900 px-6 py-14 text-white shadow-2xl sm:px-14 sm:py-20"
+        >
+          <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-accent-500/30 blur-3xl" aria-hidden="true" />
+          <div className="pointer-events-none absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-accent-700/25 blur-3xl" aria-hidden="true" />
+          <div className="relative max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent-300">Afspraak maken</p>
+            <h2 className="mt-4 text-4xl font-bold leading-[1.1] tracking-[-0.03em] sm:text-5xl">
+              Plan uw APK, onderhoud of reparatie
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-slate-300 sm:text-xl">
               Kies wat u het makkelijkst vindt. We reageren snel en plannen een moment dat u uitkomt.
             </p>
           </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-3">
+          <div className="relative mt-12 grid gap-4 md:grid-cols-3">
             {options.map((o) => (
               <a
                 key={o.title}
                 href={o.href}
                 {...(o.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="group flex flex-col rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:border-accent-400/60 hover:bg-white/10"
+                className="group flex flex-col rounded-3xl border border-white/10 bg-white/[0.06] p-7 backdrop-blur transition hover:border-accent-400/50 hover:bg-white/[0.1]"
               >
-                <span className="grid h-12 w-12 place-items-center rounded-xl bg-accent-500 text-white">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-accent-500 text-white">
                   <Icon className="h-6 w-6">{o.icon}</Icon>
                 </span>
-                <span className="mt-5 text-lg font-semibold">{o.title}</span>
+                <span className="mt-6 text-xl font-semibold">{o.title}</span>
                 <span className="mt-1 break-words text-slate-300">{o.text}</span>
                 <span className="mt-6 inline-flex items-center gap-2 font-semibold text-accent-300">
                   {o.cta}
@@ -502,84 +404,70 @@ function Appointment() {
   );
 }
 
-function Badge({ label, sub }: { label: string; sub: string }) {
-  return (
-    <li className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-      <svg viewBox="0 0 24 24" className="h-8 w-8 shrink-0 text-accent-600" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.12" />
-        <path d="M8 12.5l2.5 2.5L16 9.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <span>
-        <span className="block font-semibold leading-tight text-ink-900">{label}</span>
-        <span className="block text-sm text-slate-500">{sub}</span>
-      </span>
-    </li>
-  );
-}
-
 function Contact() {
-  const badges = [
-    { label: "RDW erkend", sub: "APK-keuringsstation" },
-    { label: "NAP", sub: "Nationale Auto Pas" },
-    { label: "Bosch", sub: "Diagnose & onderdelen" },
-    { label: "Airco Service Station", sub: "Aircoservice" },
-    { label: "Kroon-Oil", sub: "Smeermiddelen" },
-    { label: "Pinnen", sub: "Ja graag" },
-  ];
   return (
-    <section id="contact" className="py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+    <section id="contact" className="bg-slate-50 py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading eyebrow="Contact" title="Kom gerust langs" />
-        <div className="mt-12 grid gap-8 lg:grid-cols-5">
-          <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm lg:col-span-2">
-            <address className="space-y-5 not-italic">
+        <div className="mt-14 grid gap-6 lg:grid-cols-5">
+          <div data-reveal className="rounded-3xl border border-slate-200/80 bg-white p-8 shadow-sm sm:p-10 lg:col-span-3">
+            <address className="grid gap-8 not-italic sm:grid-cols-2">
               <div className="flex gap-4">
                 <Icon className="mt-0.5 h-6 w-6 shrink-0 text-accent-600">{icons.pin}</Icon>
-                <div>
-                  <p className="font-semibold text-ink-900">HT Automotive</p>
+                <div className="leading-relaxed">
+                  <p className="font-semibold text-navy-900">HT Automotive</p>
                   <p className="text-slate-600">{ADDRESS_LINE_1}</p>
                   <p className="text-slate-600">{ADDRESS_LINE_2}</p>
                 </div>
               </div>
-              <a href={PHONE_HREF} className="flex gap-4 text-slate-700 hover:text-accent-600">
+              <div className="flex gap-4">
+                <Icon className="mt-0.5 h-6 w-6 shrink-0 text-accent-600">{icons.clock}</Icon>
+                <div>
+                  <p className="font-semibold text-navy-900">Openingstijden</p>
+                  {OPENING_HOURS.length > 0 ? (
+                    <dl className="mt-1 grid grid-cols-[auto_auto] gap-x-4 gap-y-1 text-slate-600">
+                      {OPENING_HOURS.map((o) => (
+                        <div key={o.day} className="contents">
+                          <dt>{o.day}</dt>
+                          <dd>{o.hours}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  ) : (
+                    <p className="text-slate-600">Openingstijden volgen</p>
+                  )}
+                </div>
+              </div>
+              <a href={PHONE_HREF} className="flex min-h-11 items-center gap-4 text-slate-700 transition hover:text-accent-700">
                 <Icon className="h-6 w-6 shrink-0 text-accent-600">{icons.phone}</Icon>
                 {PHONE_DISPLAY}
               </a>
-              <a href={`mailto:${EMAIL}`} className="flex gap-4 break-all text-slate-700 hover:text-accent-600">
+              <a href={`mailto:${EMAIL}`} className="flex min-h-11 items-center gap-4 break-all text-slate-700 transition hover:text-accent-700">
                 <Icon className="h-6 w-6 shrink-0 text-accent-600">{icons.mail}</Icon>
                 {EMAIL}
               </a>
-              <div className="flex gap-4">
-                <Icon className="mt-0.5 h-6 w-6 shrink-0 text-accent-600">{icons.clock}</Icon>
-                {OPENING_HOURS.length > 0 ? (
-                  <dl className="grid grid-cols-[auto_auto] gap-x-4 gap-y-1 text-slate-600">
-                    {OPENING_HOURS.map((o) => (
-                      <div key={o.day} className="contents">
-                        <dt>{o.day}</dt>
-                        <dd>{o.hours}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                ) : (
-                  <p className="text-slate-600">Openingstijden volgen</p>
-                )}
-              </div>
             </address>
             <a
               href={MAPS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-ink-900 px-6 py-3.5 font-semibold text-white transition hover:bg-accent-600"
+              className="mt-10 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-navy-900 px-6 font-semibold text-white transition hover:bg-accent-600 sm:w-auto"
             >
               Bekijk op Google Maps
               <Icon className="h-4 w-4">{icons.arrow}</Icon>
             </a>
           </div>
-          <div className="lg:col-span-3">
-            <h3 className="text-lg font-semibold text-ink-900">Keurmerken en partners</h3>
-            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-              {badges.map((b) => (
-                <Badge key={b.label} {...b} />
+          <div data-reveal style={{ transitionDelay: "90ms" }} className="rounded-3xl border border-slate-200/80 bg-white p-8 shadow-sm sm:p-10 lg:col-span-2">
+            <h3 className="text-lg font-semibold text-navy-900">Keurmerken en partners</h3>
+            <ul className="mt-6 flex flex-wrap gap-2.5">
+              {KEURMERKEN.map((k) => (
+                <li
+                  key={k}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-700"
+                >
+                  <Icon className="h-4 w-4 text-accent-600">{icons.check}</Icon>
+                  {k}
+                </li>
               ))}
             </ul>
           </div>
@@ -591,29 +479,43 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="bg-ink-950 pb-24 pt-14 text-slate-400 lg:pb-14">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 sm:px-6 md:flex-row md:items-start md:justify-between">
+    <footer className="bg-navy-950 pb-28 pt-20 text-slate-400 lg:pb-12">
+      <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 md:grid-cols-3 lg:px-8">
         <div>
-          <Logo dark />
-          <p className="mt-4 max-w-xs text-sm">APK, onderhoud en reparatie aan alle merken auto&apos;s en lichte bedrijfswagens.</p>
+          <Logo variant="dark" className="h-11 w-auto" />
+          <p className="mt-5 max-w-xs leading-relaxed">
+            APK, onderhoud en reparatie aan alle merken auto&apos;s en lichte bedrijfswagens.
+          </p>
         </div>
-        <address className="space-y-1 text-sm not-italic">
-          <p>
-            {ADDRESS_LINE_1}, {ADDRESS_LINE_2}
-          </p>
-          <p>
-            <a href={PHONE_HREF} className="hover:text-white">
-              {PHONE_DISPLAY}
-            </a>
-          </p>
-          <p>
-            <a href={`mailto:${EMAIL}`} className="hover:text-white">
-              {EMAIL}
-            </a>
-          </p>
-        </address>
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-white">Contact</h2>
+          <address className="mt-5 space-y-2 not-italic">
+            <p>{ADDRESS_LINE_1}</p>
+            <p>{ADDRESS_LINE_2}</p>
+            <p>
+              <a href={PHONE_HREF} className="transition hover:text-white">
+                {PHONE_DISPLAY}
+              </a>
+            </p>
+            <p>
+              <a href={`mailto:${EMAIL}`} className="transition hover:text-white">
+                {EMAIL}
+              </a>
+            </p>
+          </address>
+        </div>
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-white">Keurmerken</h2>
+          <ul className="mt-5 flex flex-wrap gap-2">
+            {KEURMERKEN.map((k) => (
+              <li key={k} className="rounded-full border border-white/10 px-3 py-1.5 text-sm">
+                {k}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <p className="mx-auto mt-10 max-w-6xl border-t border-white/10 px-4 pt-6 text-sm sm:px-6">© 2026 HT Automotive</p>
+      <p className="mx-auto mt-16 max-w-7xl border-t border-white/10 px-4 pt-8 text-sm sm:px-6 lg:px-8">© 2026 HT Automotive</p>
     </footer>
   );
 }
@@ -621,19 +523,16 @@ function Footer() {
 /* Duimvriendelijke actiebalk op mobiel */
 function MobileActionBar() {
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/90 p-3 backdrop-blur-md lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/90 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden">
       <div className="mx-auto grid max-w-md grid-cols-2 gap-3">
         <a
           href={PHONE_HREF}
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 py-3 font-semibold text-ink-900"
+          className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white font-semibold text-navy-900"
         >
           <Icon className="h-5 w-5">{icons.phone}</Icon>
           Bellen
         </a>
-        <a
-          href="#afspraak"
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-accent-500 py-3 font-semibold text-white"
-        >
+        <a href="#afspraak" className="inline-flex min-h-12 items-center justify-center rounded-full bg-navy-900 font-semibold text-white">
           Afspraak
         </a>
       </div>
@@ -645,10 +544,9 @@ export default function Home() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <Header />
+      <Header phoneHref={PHONE_HREF} />
       <main>
         <Hero />
-        <TrustStrip />
         <Services />
         <About />
         <Appointment />
@@ -656,6 +554,7 @@ export default function Home() {
       </main>
       <Footer />
       <MobileActionBar />
+      <Reveal />
     </>
   );
 }
