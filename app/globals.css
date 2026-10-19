@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Accent: blauw/turquoise in lijn met het huidige HT Automotive-logo */
+  --color-accent-50: #ecfbfd;
+  --color-accent-100: #cff3f8;
+  --color-accent-300: #67d4e6;
+  --color-accent-400: #2bbcd6;
+  --color-accent-500: #0ea2c0;
+  --color-accent-600: #0a82a2;
+  --color-accent-700: #0d6884;
+
+  --color-ink-950: #070b14;
+  --color-ink-900: #0b1220;
+  --color-ink-800: #131c2e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ruimte voor de sticky header bij anchor-links */
+section[id] {
+  scroll-margin-top: 4.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
